@@ -1,7 +1,9 @@
-using System.Reflection;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using UserService.Domain.Entities;
 using UserService.Domain.Interfaces;
 using UserService.Infrastructure.Configuration;
 using UserService.Infrastructure.Data;
@@ -21,8 +23,6 @@ try
         SerilogConfig.ConfigureLogger(services, loggerConfig, builder));
 
     builder.Services.AddControllers();
-
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
@@ -33,8 +33,13 @@ try
     );
 
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-    builder.Services.AddAutoMapper(cfg => { },typeof(Program).Assembly);
+    builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
+    builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+    builder.Services.AddAuthentication();
+
     builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
     builder.Services.AddHealthChecks();
 

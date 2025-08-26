@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Entities;
 using UserService.Infrastructure.Configuration;

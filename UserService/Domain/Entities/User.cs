@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Common;
+using Common.Models;
 
 namespace UserService.Domain.Entities;
 

@@ -1,22 +1,34 @@
-﻿using UserService.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using UserService.Domain.Entities;
 using UserService.Domain.Interfaces;
 
 namespace UserService.Infrastructure.Data;
 
-public class UserRepository : IUserRepository
+public class UserRepository(UserServiceContext context) : IUserRepository
 {
-    public Task<User> GetByEmailAsync(string reqEmail)
+    public async Task<User?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
     }
 
-    public Task CreateAsync(User user)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        return await context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant()
+                && !u.IsDeleted);
     }
 
-    public Task SaveChangesAsync()
+    public async Task<User> CreateAsync(User user)
     {
-        throw new NotImplementedException();
+        await context.Users.AddAsync(user);
+        return user;
     }
+
+    public async Task SaveChangesAsync() =>
+        await context.SaveChangesAsync();
 }
